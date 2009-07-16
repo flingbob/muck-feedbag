@@ -22,6 +22,7 @@ require "open-uri"
 require "net/http"
 
 module Feedbag
+  Feed = Struct.new(:url, :title)
 
 	@content_types = [
 		'application/x.atom+xml',
@@ -83,7 +84,7 @@ module Feedbag
     end
 
 		begin
-			html = open(url) do |f|
+			open(url) do |f|
 				if @content_types.include?(f.content_type.downcase)
 					return self.add_feed(url, nil)
 				end
@@ -100,26 +101,18 @@ module Feedbag
 				(doc/"link").each do |l|
 					next unless l["rel"]
 					if l["type"] and @content_types.include?(l["type"].downcase.strip) and (l["rel"].downcase =~ /alternate/i or l["rel"] == "service.feed")
-						self.add_feed(l["href"], url, $base_uri)
+						self.add_feed(l["href"], url, $base_uri, l["title"])
 					end
 				end
 
         unless args[:narrow]
-  				(doc/"a").each do |a|
-	  				next unless a["href"]
-		  			if self.looks_like_feed?(a["href"]) and (a["href"] =~ /\// or a["href"] =~ /#{url_uri.host}/)
-			  			self.add_feed(a["href"], url, $base_uri)
-				  	end
-  				end
-
 	  			(doc/"a").each do |a|
 		  			next unless a["href"]
 			  		if self.looks_like_feed?(a["href"])
-				  		self.add_feed(a["href"], url, $base_uri)
+				  		self.add_feed(a["href"], url, $base_uri, a.inner_html)
 					  end
   				end
         end
-
 			end
 		rescue Timeout::Error => err
 			$stderr.puts "Timeout error ocurred with `#{url}: #{err}'"
@@ -132,7 +125,6 @@ module Feedbag
 		ensure
 			return $feeds
 		end
-		
 	end
 
 	def self.looks_like_feed?(url)
@@ -143,7 +135,7 @@ module Feedbag
 		end
 	end
 
-	def self.add_feed(feed_url, orig_url, base_uri = nil)
+	def self.add_feed(feed_url, orig_url, base_uri = nil, title = "")
 		# puts "#{feed_url} - #{orig_url}"
 		url = feed_url.sub(/^feed:/, '').strip
 
@@ -164,7 +156,7 @@ module Feedbag
 		end
 
 		# verify url is really valid
-		$feeds.push(url) unless $feeds.include?(url)# if self._is_http_valid(URI.parse(url), orig_url)
+		$feeds.push(Feed.new(url, title)) unless $feeds.any? { |f| f.url == url }# if self._is_http_valid(URI.parse(url), orig_url)
 	end
 
 	# not used. yet.
