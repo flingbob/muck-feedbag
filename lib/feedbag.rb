@@ -109,7 +109,7 @@ module Feedbag
 	  			(doc/"a").each do |a|
 		  			next unless a["href"]
 			  		if self.looks_like_feed?(a["href"])
-				  		self.add_feed(a["href"], url, $base_uri, a["title"] || a.inner_html)
+				  		self.add_feed(a["href"], url, $base_uri, a["title"] || a.inner_html || a['alt']) # multiple fallbacks, first title, then the tag content, then the alt tag (in case of image)
 					  end
   				end
         end
