@@ -2,9 +2,9 @@
  
 Gem::Specification.new do |s|
   s.name = %q{feedbag}
-  s.version = "0.5.99"
-	s.homepage = "http://axiombox.com/feedbag"
-	s.rubyforge_project = "feedbag"
+  s.version = "0.5.100"
+  s.homepage = "http://axiombox.com/feedbag"
+  #s.rubyforge_project = "feedbag"
  
   s.authors = ["Axiombox", "David Moreno"]
   s.date = %q{2009-02-10}
