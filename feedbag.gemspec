@@ -1,8 +1,8 @@
 # -*- encoding: utf-8 -*-
  
 Gem::Specification.new do |s|
-  s.name = %q{feedbag}
-  s.version = "0.5.100"
+  s.name = %q{logophobia-feedbag}
+  s.version = "0.5.101"
   s.homepage = "http://axiombox.com/feedbag"
   #s.rubyforge_project = "feedbag"
  

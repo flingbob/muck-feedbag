@@ -65,6 +65,8 @@ module Feedbag
 		end
 		#url = "#{url_uri.scheme or 'http'}://#{url_uri.host}#{url_uri.path}"
 
+    return self.add_feed(url, nil) if looks_like_feed? url
+
 		# check if feed_valid is avail
     unless args[:narrow]
       begin
