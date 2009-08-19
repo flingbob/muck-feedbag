@@ -130,7 +130,7 @@ module Feedbag
 	end
 
 	def self.looks_like_feed?(url)
-		if url =~ /(\.(rdf|xml|rdf|rss)$|feed=(rss|atom)|(atom|feed)\/?$)/i
+		if url =~ /((\.|\/)(rdf|xml|rdf|rss)$|feed=(rss|atom)|(atom|feed)\/?$)/i
 			true
 		else
 			false
