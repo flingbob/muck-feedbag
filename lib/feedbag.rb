@@ -20,6 +20,7 @@ require "rubygems"
 require "hpricot"
 require "open-uri"
 require "net/http"
+require 'timeout'
 
 module Feedbag
   Feed = Struct.new(:url, :title)
@@ -86,36 +87,38 @@ module Feedbag
     end
 
 		begin
-			open(url) do |f|
-				if @content_types.include?(f.content_type.downcase)
-					return self.add_feed(url, nil)
-				end
+      Timeout::timeout(10) do
+        open(url) do |f|
+          if @content_types.include?(f.content_type.downcase)
+            return self.add_feed(url, nil)
+          end
 
-				doc = Hpricot(f.read)
+          doc = Hpricot(f.read)
 
-				if doc.at("base") and doc.at("base")["href"]
-					$base_uri = doc.at("base")["href"]
-				else
-					$base_uri = nil
-				end
+          if doc.at("base") and doc.at("base")["href"]
+            $base_uri = doc.at("base")["href"]
+          else
+            $base_uri = nil
+          end
 
-				# first with links
-				(doc/"link").each do |l|
-					next unless l["rel"]
-					if l["type"] and @content_types.include?(l["type"].downcase.strip) and (l["rel"].downcase =~ /alternate/i or l["rel"] == "service.feed")
-						self.add_feed(l["href"], url, $base_uri, l["title"])
-					end
-				end
+          # first with links
+          (doc/"link").each do |l|
+            next unless l["rel"]
+            if l["type"] and @content_types.include?(l["type"].downcase.strip) and (l["rel"].downcase =~ /alternate/i or l["rel"] == "service.feed")
+              self.add_feed(l["href"], url, $base_uri, l["title"])
+            end
+          end
 
-        unless args[:narrow]
-	  			(doc/"a").each do |a|
-		  			next unless a["href"]
-			  		if self.looks_like_feed?(a["href"])
-				  		self.add_feed(a["href"], url, $base_uri, a["title"] || a.inner_html || a['alt']) # multiple fallbacks, first title, then the tag content, then the alt tag (in case of image)
-					  end
-  				end
+          unless args[:narrow]
+            (doc/"a").each do |a|
+              next unless a["href"]
+              if self.looks_like_feed?(a["href"])
+                self.add_feed(a["href"], url, $base_uri, a["title"] || a.inner_html || a['alt']) # multiple fallbacks, first title, then the tag content, then the alt tag (in case of image)
+              end
+            end
+          end
         end
-			end
+      end
 		rescue Timeout::Error => err
 			$stderr.puts "Timeout error ocurred with `#{url}: #{err}'"
 		rescue OpenURI::HTTPError => the_error
