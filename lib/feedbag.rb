@@ -21,6 +21,7 @@ require "hpricot"
 require "open-uri"
 require "net/http"
 require 'timeout'
+require 'iconv'
 
 module Feedbag
   Feed = Struct.new(:url, :title)
@@ -93,7 +94,8 @@ module Feedbag
             return self.add_feed(url, nil)
           end
 
-          doc = Hpricot(f.read)
+					ic = Iconv.new('UTF-8//IGNORE', f.charset)
+          doc = Hpricot(ic.iconv(f.read))
 
           if doc.at("base") and doc.at("base")["href"]
             $base_uri = doc.at("base")["href"]
