@@ -4,14 +4,14 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{muck-feedbag}
-  s.version = "0.6.0"
+  s.name = %q{penso-feedbag}
+  s.version = "0.6.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Joel Duffin", "Justin Ball"]
+  s.authors = ["Joel Duffin", "Justin Ball", "Fabien Penso"]
   s.date = %q{2009-11-10}
-  s.description = %q{This gem will return title and url for each feed discovered at a given url}
-  s.email = %q{justin@tatemae.com}
+  s.description = %q{This gem will return title and url for each feed discovered at a given url, handling proper charset}
+  s.email = %q{fabienpenso@gmail.com}
   s.extra_rdoc_files = [
     "ChangeLog",
      "README.markdown"
@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
      "rails/init.rb",
      "test/atom_autodiscovery_test.rb"
   ]
-  s.homepage = %q{http://github.com/tatemae/muck-feedbag}
+  s.homepage = %q{http://github.com/penso/muck-feedbag}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.5}
