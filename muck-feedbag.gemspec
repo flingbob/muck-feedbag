@@ -5,13 +5,15 @@
 
 Gem::Specification.new do |s|
   s.name = %q{muck-feedbag}
-  s.version = "0.6.0"
+  s.version = "0.7.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Joel Duffin", "Justin Ball", "Fabien Penso"]
   s.date = %q{2011-01-31}
+  s.default_executable = %q{feedbag}
   s.description = %q{This gem will return title and url for each feed discovered at a given url}
   s.email = %q{justin@tatemae.com}
+  s.executables = ["feedbag"]
   s.extra_rdoc_files = [
     "ChangeLog",
     "README.markdown",
@@ -25,17 +27,23 @@ Gem::Specification.new do |s|
     "TODO",
     "VERSION",
     "benchmark/rfeedfinder_benchmark.rb",
+    "bin/feedbag",
+    "feedbag.gemspec",
     "index.html",
     "lib/feedbag.rb",
     "muck-feedbag.gemspec",
-    "test/atom_autodiscovery_test.rb"
+    "test/atom_autodiscovery_test.rb",
+    "test/feedbag_test.rb",
+    "test/test_helper.rb"
   ]
   s.homepage = %q{http://github.com/tatemae/muck-feedbag}
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.7}
   s.summary = %q{Fork of the feedbag gem.}
   s.test_files = [
-    "test/atom_autodiscovery_test.rb"
+    "test/atom_autodiscovery_test.rb",
+    "test/feedbag_test.rb",
+    "test/test_helper.rb"
   ]
 
   if s.respond_to? :specification_version then

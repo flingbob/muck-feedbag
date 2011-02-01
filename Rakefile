@@ -6,7 +6,6 @@ require 'rake/rdoctask'
 begin
   require 'rcov/rcovtask'
   Rcov::RcovTask.new do |t|
-    #t.libs << 'lib'
     t.libs << 'lib'
     t.pattern = 'test/*_test.rb'
     t.verbose = true
@@ -21,9 +20,8 @@ end
 
 desc 'Test muck-feedbag.'
 Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
   t.libs << 'test'
-  t.pattern = 'test/*_test.rb'
+  t.test_files = FileList["test/feedbag_test.rb"]
   t.verbose = true
 end
 
@@ -38,7 +36,7 @@ begin
     gem.description = "This gem will return title and url for each feed discovered at a given url"
     gem.email = "justin@tatemae.com"
     gem.homepage = "http://github.com/tatemae/muck-feedbag"
-    gem.authors = ["Joel Duffin", "Justin Ball", "Fabien Penso"]
+    gem.authors = ["Axiombox", "David Moreno", "Joel Duffin", "Justin Ball", "Fabien Penso"]
     gem.add_development_dependency "shoulda"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end

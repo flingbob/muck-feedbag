@@ -24,7 +24,7 @@ require 'timeout'
 require 'iconv'
 
 module Feedbag
-  Feed = Struct.new(:url, :title)
+  Feed = Struct.new(:url, :title, :human_url)
 
 	@content_types = [
 		'application/x.atom+xml',
@@ -42,6 +42,8 @@ module Feedbag
 		# use LWR::Simple.normalize some time
 		url_uri = URI.parse(url)
 		url = "#{url_uri.scheme or 'http'}://#{url_uri.host}#{url_uri.path}"
+		url << "?#{url_uri.query}" if url_uri.query
+		
 		# hack:
 		url.sub!(/^feed:\/\//, 'http://')
 
@@ -70,30 +72,32 @@ module Feedbag
     return self.add_feed(url, nil) if looks_like_feed? url
 
 		# check if feed_valid is avail
-    unless args[:narrow]
-      begin
-	  		require "feed_validator"
-		  	v = W3C::FeedValidator.new
-			  v.validate_url(url)
-  			return self.add_feed(url, nil) if v.valid?
-	  	rescue LoadError
-		  	# scoo
-  		rescue REXML::ParseException
-	  	  # usually indicates timeout
-		    # TODO: actually find out timeout. use Terminator?
-		    $stderr.puts "Feed looked like feed but might not have passed validation or timed out"
-      rescue => ex
-	  		$stderr.puts "#{ex.class} error ocurred with: `#{url}': #{ex.message}"
-		  end
-    end
+    begin
+  		require "feed_validator"
+	  	v = W3C::FeedValidator.new
+		  v.validate_url(url)
+			return self.add_feed(url, nil) if v.valid?
+  	rescue LoadError
+	  	# scoo
+		rescue REXML::ParseException
+  	  # usually indicates timeout
+	    # TODO: actually find out timeout. use Terminator?
+	    # $stderr.puts "Feed looked like feed but might not have passed validation or timed out"
+    rescue => ex
+  		$stderr.puts "#{ex.class} error ocurred with: `#{url}': #{ex.message}"
+	  end
 
 		begin
       Timeout::timeout(10) do
         open(url) do |f|
-          if @content_types.include?(f.content_type.downcase)
-            return self.add_feed(url, nil)
-          end
-
+          content_type = f.content_type.downcase
+  				if content_type == "application/octet-stream" # open failed
+  				  content_type = f.meta["content-type"].gsub(/;.*$/, '')
+  				end
+  				if @content_types.include?(content_type)
+  					return self.add_feed(url, nil)
+  				end		
+          				
 					ic = Iconv.new('UTF-8//IGNORE', f.charset)
           doc = Hpricot(ic.iconv(f.read))
 
@@ -111,14 +115,20 @@ module Feedbag
             end
           end
 
-          unless args[:narrow]
-            (doc/"a").each do |a|
-              next unless a["href"]
-              if self.looks_like_feed?(a["href"])
-                self.add_feed(a["href"], url, $base_uri, a["title"] || a.inner_html || a['alt']) # multiple fallbacks, first title, then the tag content, then the alt tag (in case of image)
-              end
+          (doc/"a").each do |a|
+            next unless a["href"]
+            if self.looks_like_feed?(a["href"]) and (a["href"] =~ /\// or a["href"] =~ /#{url_uri.host}/)
+              self.add_feed(a["href"], url, $base_uri, a["title"] || a.inner_html || a['alt'])
             end
           end
+
+          (doc/"a").each do |a|
+            next unless a["href"]
+            if self.looks_like_feed?(a["href"])
+              self.add_feed(a["href"], url, $base_uri, a["title"] || a.inner_html || a['alt'])
+            end
+          end
+          
         end
       end
 		rescue Timeout::Error => err
@@ -163,7 +173,7 @@ module Feedbag
 		end
 
 		# verify url is really valid
-		$feeds.push(Feed.new(url, title)) unless $feeds.any? { |f| f.url == url }# if self._is_http_valid(URI.parse(url), orig_url)
+		$feeds.push(Feed.new(url, title, orig_url)) unless $feeds.any? { |f| f.url == url }# if self._is_http_valid(URI.parse(url), orig_url)
 	end
 
 	# not used. yet.
