@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.version = "0.7.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Joel Duffin", "Justin Ball", "Fabien Penso"]
+  s.authors = ["Axiombox", "David Moreno", "Joel Duffin", "Justin Ball", "Fabien Penso"]
   s.date = %q{2011-01-31}
   s.default_executable = %q{feedbag}
   s.description = %q{This gem will return title and url for each feed discovered at a given url}
