@@ -20,14 +20,14 @@ class AtomAutoDiscoveryTest < Test::Unit::TestCase
 			f = Feedbag.find url
 
 			assert_instance_of Array, f
-			assert f.size == 1, "Feedbag didn't find a feed on #{url} or found more than one"
+			f.size.should == 1, "Feedbag didn't find a feed on #{url} or found more than one"
 
 			puts " found #{f[0]}"
 			feed = Hpricot(open(f[0]))
 	
 			(feed/"link").each do |l|
 				next unless l["rel"] == "alternate"
-				assert_equal l["href"], url
+				url.should == l["href"]
 			end
 
 			# ahora me voy al siguiente

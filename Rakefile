@@ -38,7 +38,7 @@ begin
     gem.description = "This gem will return title and url for each feed discovered at a given url"
     gem.email = "justin@tatemae.com"
     gem.homepage = "http://github.com/tatemae/muck-feedbag"
-    gem.authors = ["Joel Duffin", "Justin Ball"]
+    gem.authors = ["Joel Duffin", "Justin Ball", "Fabien Penso"]
     gem.add_development_dependency "shoulda"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
